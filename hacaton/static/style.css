@@ -43,7 +43,7 @@ header .container {
     gap: 15px;
     text-decoration: none;
     color: inherit;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
 .logo:hover {
@@ -67,6 +67,7 @@ header .container {
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
 .logo-text h1 {
@@ -119,7 +120,7 @@ section {
 
 .welcome {
     text-align: center;
-    background: linear-gradient(135deg, #7f7be4, #5e59e0);
+    background: linear-gradient(135deg, #8a87e6, #6b67e0);
     color: white;
     border: none;
 }
@@ -182,7 +183,7 @@ section {
 .quick-search button,
 .search-section button {
     padding: 15px 30px;
-    background-color: #2c3e50;
+    background-color: #414951;
     color: white;
     border: none;
     border-radius: 8px;
@@ -192,7 +193,7 @@ section {
 
 .quick-search button:hover,
 .search-section button:hover {
-    background-color: #34495e;
+    background-color: #27313b;
 }
 
 
@@ -265,7 +266,7 @@ section {
 }
 
 .popular-btn {
-    background-color: #74b9ff;
+    background-color: #8264ff;
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
@@ -275,7 +276,7 @@ section {
 }
 
 .popular-btn:hover {
-    background-color: #0984e3;
+    background-color: #643efe;
 }
 
 
@@ -362,12 +363,12 @@ section {
     padding: 25px;
     border-radius: 8px;
     margin-bottom: 20px;
-    border-left: 5px solid #e74c3c;
+    border-left: 5px solid #2a1468;
     gap: 25px;
 }
 
 .event-date {
-    background-color: #e74c3c;
+    background-color: #5400d6;
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
@@ -395,7 +396,7 @@ section {
 }
 
 .tip {
-    background: linear-gradient(135deg, #00b894, #00a085);
+    background: linear-gradient(135deg, #5c5c5c, #9f9e9e);
     color: white;
     border: none;
 }

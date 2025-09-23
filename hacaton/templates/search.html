@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block title %}Поиск аудиторий - CampusWay{% endblock %} {% block content %}
 <!-- Форма поиска -->
 <section class="search-section">
-    <h2>🔍 Найти аудиторию</h2>
+    <h2>Найти аудиторию</h2>
     <form action="/search" method="GET">
         <input type="text" name="q" value="{{ query }}" placeholder="Введи номер аудитории или описание...">
         <button type="submit">Искать</button>
@@ -29,7 +29,7 @@
     </div>
     {% else %}
     <div class="no-results">
-        <h4>😔 Ничего не найдено</h4>
+        <h4>Ничего не найдено</h4>
         <p>Попробуй поискать по-другому или выбери из популярных ниже</p>
     </div>
     {% endif %}
