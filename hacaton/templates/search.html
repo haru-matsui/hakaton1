@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block title %}Поиск аудиторий - CampusWay{% endblock %} {% block content %}
+<!-- Форма поиска -->
+<section class="search-section">
+    <h2>🔍 Найти аудиторию</h2>
+    <form action="/search" method="GET">
+        <input type="text" name="q" value="{{ query }}" placeholder="Введи номер аудитории или описание...">
+        <button type="submit">Искать</button>
+    </form>
+</section>
+
+<!-- Результаты поиска -->
+{% if query %}
+<section class="results">
+    <h3>Результаты для "{{ query }}":</h3>
+
+    {% if results %}
+    <div class="results-list">
+        {% for room in results %}
+        <div class="result-card">
+            <div class="room-number">{{ room.number }}</div>
+            <div class="room-info">
+                <h4>Аудитория {{ room.number }}</h4>
+                <p><strong>Здание:</strong> {{ room.building }}</p>
+                <p><strong>Этаж:</strong> {{ room.floor }}</p>
+                <p><strong>Описание:</strong> {{ room.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-results">
+        <h4>😔 Ничего не найдено</h4>
+        <p>Попробуй поискать по-другому или выбери из популярных ниже</p>
+    </div>
+    {% endif %}
+</section>
+{% endif %}
+
+<!-- Популярные аудитории -->
+<section class="popular">
+    <h3>Популярные аудитории</h3>
+    <div class="popular-links">
+        <a href="/search?q=101" class="popular-btn">🏛️ Аудитория 101 - Лекционная</a>
+        <a href="/search?q=205" class="popular-btn">💻 Аудитория 205 - Компьютеры</a>
+        <a href="/search?q=15" class="popular-btn">📚 Аудитория 15 - Библиотека</a>
+        <a href="/search?q=110" class="popular-btn">🎭 Аудитория 110 - Актовый зал</a>
+    </div>
+</section>
+{% endblock %}

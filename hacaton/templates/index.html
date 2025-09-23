@@ -1,0 +1,72 @@
+{% extends "base.html" %} {% block title %}CampusWay - Твой помощник по кампусу{% endblock %} {% block content %}
+<!-- в консоль: localStorage.removeItem('campusway_visited') -->
+<section class="welcome" id="welcomeSection">
+    <h2>Добро пожаловать в CampusWay!</h2>
+    <p>Здесь ты можешь легко найти любую аудиторию, узнать о событиях и получить помощь по университету</p>
+    <button onclick="hideWelcome()" class="welcome-btn">Понятно!</button>
+</section>
+
+<!-- Быстрый поиск -->
+<section class="quick-search">
+    <h3>🔍 Быстрый поиск аудиторий</h3>
+    <form action="/search" method="GET">
+        <input type="text" name="q" placeholder="Введи номер аудитории (например: 101, 205)...">
+        <button type="submit">Найти</button>
+    </form>
+</section>
+
+<!-- Что можно делать -->
+<section class="features">
+    <h3>Что можно делать?</h3>
+    <div class="cards">
+        <a href="/faq" class="card-link">
+            <div class="card">
+                <h4>🗺️ Поиск аудиторий</h4>
+                <p>Быстро найти любую аудиторию в университете<br><b>Искать →</b></p>
+            </div>
+        </a>
+        <a href="/faq" class="card-link">
+            <div class="card">
+                <h4>📅 События</h4>
+                <p>Узнать о предстоящих мероприятиях<br><b>Смотреть →</b></p>
+            </div>
+        </a>
+
+        <a href="/faq" class="card-link">
+            <div class="card">
+                <h4>❓ Помощь</h4>
+                <p>Получить ответы на частые вопросы<br><b>Узнать →</b></p>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- Популярные аудитории -->
+<section class="popular">
+    <h3>Популярные места</h3>
+    <div class="popular-links">
+        <a href="/search?q=101" class="popular-btn">🏛️ Аудитория 101</a>
+        <a href="/search?q=205" class="popular-btn">💻 Компьютерный класс</a>
+        <a href="/search?q=15" class="popular-btn">📚 Читальный зал</a>
+        <a href="/search?q=110" class="popular-btn">🎭 Актовый зал</a>
+    </div>
+</section>
+
+
+{% endblock %} {% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const welcomeSection = document.getElementById('welcomeSection');
+        const hasVisited = localStorage.getItem('campusway_visited');
+
+        if (hasVisited) {
+            welcomeSection.style.display = 'none';
+        }
+    });
+
+    function hideWelcome() {
+        localStorage.setItem('campusway_visited', 'true');
+        document.getElementById('welcomeSection').style.display = 'none';
+    }
+</script>
+{% endblock %}

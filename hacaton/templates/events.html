@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block title %}События - CampusWay{% endblock %} {% block content %}
+<!-- Заголовок страницы -->
+<section class="page-title">
+    <h2>🎉 Ближайшие события</h2>
+    <p>Не пропусти интересные мероприятия в университете!</p>
+</section>
+
+<!-- Список событий -->
+<section class="events-list">
+    {% for event in events %}
+    <div class="event-card">
+        <div class="event-date">
+            📅 {{ event.date }}
+        </div>
+        <div class="event-info">
+            <h3>{{ event.name }}</h3>
+            <p><strong>Место:</strong> {{ event.place }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

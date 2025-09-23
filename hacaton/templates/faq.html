@@ -1,0 +1,76 @@
+{% extends "base.html" %} {% block title %}FAQ - CampusWay{% endblock %} {% block content %}
+<!-- Заголовок страницы -->
+<section class="page-title">
+    <h2>❓ Часто задаваемые вопросы</h2>
+    <p>Ответы на самые популярные вопросы о CampusWay</p>
+</section>
+
+<!-- FAQ список -->
+<section class="faq-list">
+    <div class="faq-item">
+        <div class="faq-question">
+            <h3>Как найти аудиторию в университете?</h3>
+            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
+        </div>
+        <div class="faq-answer" style="display: none;">
+            <p>Воспользуйтесь поиском аудиторий на главной странице или в разделе "Поиск аудиторий". Введите номер аудитории или её описание, и система покажет точное местоположение.</p>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <h3>Как узнать о предстоящих событиях?</h3>
+            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
+        </div>
+        <div class="faq-answer" style="display: none;">
+            <p>Все актуальные события размещены в разделе "События". Там вы найдете информацию о датах, времени и местах проведения мероприятий.</p>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <h3>Как присоединиться к клубу?</h3>
+            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
+        </div>
+        <div class="faq-answer" style="display: none;">
+            <p>Посетите раздел "Клубы", выберите интересующий вас клуб и просто приходите на встречи в указанное время. Также можно обратиться в студенческий совет (каб. 102).</p>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <h3>Где находится библиотека?</h3>
+            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
+        </div>
+        <div class="faq-answer" style="display: none;">
+            <p>Библиотека находится в аудитории 15. Воспользуйтесь поиском, введя "15" или "библиотека", чтобы получить подробную информацию о местоположении.</p>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <h3>Работает ли сайт на мобильных устройствах?</h3>
+            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
+        </div>
+        <div class="faq-answer" style="display: none;">
+            <p>Да! CampusWay полностью адаптирован для мобильных устройств. Вы можете пользоваться всеми функциями с телефона или планшета.</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %} {% block scripts %}
+<script>
+    function toggleAnswer(button) {
+        const faqItem = button.closest('.faq-item');
+        const answer = faqItem.querySelector('.faq-answer');
+
+        if (answer.style.display === 'none') {
+            answer.style.display = 'block';
+            button.textContent = 'Скрыть';
+        } else {
+            answer.style.display = 'none';
+            button.textContent = 'Показать';
+        }
+    }
+</script>
+{% endblock %}

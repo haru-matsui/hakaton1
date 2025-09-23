@@ -1,0 +1,26 @@
+{% extends "base.html" %} {% block title %}Клубы - CampusWay{% endblock %} {% block content %}
+
+<!-- Заголовок страницы -->
+<section class="page-title">
+    <h2>👥 Клубы и кружки</h2>
+    <p>Найди единомышленников и развивай свои таланты!</p>
+</section>
+
+<!-- Сетка клубов -->
+<section class="clubs-grid">
+    {% for club in clubs %}
+    <div class="club-card">
+        <div class="club-image">
+            <img src="{{ club.image }}" alt="{{ club.alt }}">
+        </div>
+        <div class="club-info">
+            <h3>{{ club.name }}</h3>
+            <p><strong>Встречи:</strong> {{ club.schedule }}</p>
+            <p><strong>Место:</strong> {{ club.location }}</p>
+            <p>{{ club.description }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CampusWay - Твой помощник по кампусу{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> {% block head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Шапка сайта -->
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/static/лого.png" alt="CampusWay Logo">
+                <div class="logo-text">
+                    <h1>CampusWay</h1>
+                    <p>Твой помощник по кампусу</p>
+                </div>
+            </a>
+            <nav>
+                <a href="/search">Поиск аудиторий</a>
+                <a href="/events">События</a>
+                <a href="/clubs">Клубы</a> {% block nav_extra %}{% endblock %}
+            </nav>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main>
+        <div class="container-tip">
+            {% block content %}{% endblock %}
+            <!-- Совет дня (цикл) -->
+            <section class="tip">
+                <h3>💡 Совет дня</h3>
+                <p>Знаешь ли ты, что в библиотеке на втором этаже есть тихие зоны для учебы? Идеально подходит для подготовки к экзаменам!</p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CampusWay. Сделано с ❤️ для студентов</p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>
