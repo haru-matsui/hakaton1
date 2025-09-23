@@ -20,7 +20,7 @@
             <div class="room-number">{{ room.number }}</div>
             <div class="room-info">
                 <h4>Аудитория {{ room.number }}</h4>
-                <p><strong>Здание:</strong> {{ room.building }}</p>
+                <p><strong>Корпус:</strong> {{ room.building }}</p>
                 <p><strong>Этаж:</strong> {{ room.floor }}</p>
                 <p><strong>Описание:</strong> {{ room.description }}</p>
             </div>
@@ -34,16 +34,4 @@
     </div>
     {% endif %}
 </section>
-{% endif %}
-
-<!-- Популярные аудитории -->
-<section class="popular">
-    <h3>Популярные аудитории</h3>
-    <div class="popular-links">
-        <a href="/search?q=101" class="popular-btn">🏛️ Аудитория 101 - Лекционная</a>
-        <a href="/search?q=205" class="popular-btn">💻 Аудитория 205 - Компьютеры</a>
-        <a href="/search?q=15" class="popular-btn">📚 Аудитория 15 - Библиотека</a>
-        <a href="/search?q=110" class="popular-btn">🎭 Аудитория 110 - Актовый зал</a>
-    </div>
-</section>
-{% endblock %}
+{% endif %} {% endblock %}

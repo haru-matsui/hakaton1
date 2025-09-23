@@ -7,55 +7,17 @@
 
 <!-- FAQ список -->
 <section class="faq-list">
+    {% for item in faq %}
     <div class="faq-item">
         <div class="faq-question">
-            <h3>Как найти аудиторию в университете?</h3>
+            <h3>{{ item.question }}</h3>
             <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
         </div>
         <div class="faq-answer" style="display: none;">
-            <p>Воспользуйтесь поиском аудиторий на главной странице или в разделе "Поиск аудиторий". Введите номер аудитории или её описание, и система покажет точное местоположение.</p>
+            <p>{{ item.answer }}</p>
         </div>
     </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <h3>Как узнать о предстоящих событиях?</h3>
-            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
-        </div>
-        <div class="faq-answer" style="display: none;">
-            <p>Все актуальные события размещены в разделе "События". Там вы найдете информацию о датах, времени и местах проведения мероприятий.</p>
-        </div>
-    </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <h3>Как присоединиться к клубу?</h3>
-            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
-        </div>
-        <div class="faq-answer" style="display: none;">
-            <p>Посетите раздел "Клубы", выберите интересующий вас клуб и просто приходите на встречи в указанное время. Также можно обратиться в студенческий совет (каб. 102).</p>
-        </div>
-    </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <h3>Где находится библиотека?</h3>
-            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
-        </div>
-        <div class="faq-answer" style="display: none;">
-            <p>Библиотека находится в аудитории 15. Воспользуйтесь поиском, введя "15" или "библиотека", чтобы получить подробную информацию о местоположении.</p>
-        </div>
-    </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <h3>Работает ли сайт на мобильных устройствах?</h3>
-            <button class="faq-btn" onclick="toggleAnswer(this)">Показать</button>
-        </div>
-        <div class="faq-answer" style="display: none;">
-            <p>Да! CampusWay полностью адаптирован для мобильных устройств. Вы можете пользоваться всеми функциями с телефона или планшета.</p>
-        </div>
-    </div>
+    {% endfor %}
 </section>
 
 {% endblock %} {% block scripts %}

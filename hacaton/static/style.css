@@ -11,6 +11,9 @@ body {
     background-color: #f8f9fa;
     color: #333;
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .container {
@@ -105,6 +108,7 @@ nav a:hover {
 
 main {
     padding: 40px 0;
+    flex: 1;
 }
 
 section {
@@ -262,13 +266,13 @@ section {
 .popular-links {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
+    gap: 20px;
 }
 
 .popular-btn {
     background-color: #8264ff;
     color: white;
-    padding: 15px 20px;
+    padding: 25px 20px;
     border-radius: 8px;
     text-decoration: none;
     text-align: center;
