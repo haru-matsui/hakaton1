@@ -14,23 +14,39 @@ def load_json_data(filename):
 def home():
     return render_template('index.html')
 
+@app.route('/campus_map')
+def campus_map():
+    return render_template('campus_map.html')
+
+
+def load_auditoriums():
+    with open('static/data/auditoriums.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return data['auditoriums']
+
+def search_auditoriums(query):
+    auditoriums = load_auditoriums()
+    results = []
+    
+    query_lower = query.lower()
+    
+    for room in auditoriums:
+        if (query_lower in room['number'].lower() or 
+            query_lower in room['description'].lower() or
+            query_lower in room['building'].lower()):
+            results.append(room)
+    
+    return results
+
 @app.route('/search')
 def search():
     query = request.args.get('q', '')
     results = []
     
-    # Загружаем данные об аудиториях из JSON
-    auditoriums_data = load_json_data('auditoriums.json')
-    auditoriums_list = auditoriums_data.get('auditoriums', [])
-    
     if query:
-        for room in auditoriums_list:
-            if (query.lower() in room.get('number', '').lower() or 
-                query.lower() in room.get('description', '').lower() or
-                query.lower() in room.get('teacher', '').lower()):
-                results.append(room)
+        results = search_auditoriums(query)
     
-    return render_template('search.html', results=results, query=query)
+    return render_template('search.html', query=query, results=results)
 
 @app.route('/events')
 def events_page():

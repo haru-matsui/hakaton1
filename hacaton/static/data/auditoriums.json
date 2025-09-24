@@ -1,33 +1,24 @@
 {
     "auditoriums": [{
-            "number": "7-401",
-            "building": "Корпус 7",
-            "floor": "4 этаж",
-            "description": "Лекционная аудитория"
-        },
-        {
-            "number": "6-401",
+            "number": "6-416",
             "building": "Корпус 6",
             "floor": "4 этаж",
-            "description": ".."
+            "description": "..",
+            "photo": "static/images/rooms/6-416.png"
         },
         {
-            "number": "",
-            "building": "Корпус 2",
-            "floor": "2 этаж",
-            "description": "Столовая 2 корпуса. Рядом с лестницей и диванчиками"
-        },
-        {
-            "number": "",
-            "building": "Корпус 2",
-            "floor": "2 этаж",
-            "description": "Диванчики во 2 корпусе. Рядом со столовой"
-        },
-        {
-            "number": "",
+            "number": "6-415",
             "building": "Корпус 6",
-            "floor": "1 этаж",
-            "description": "Каворкинг зона 6 корпуса. Прямо около входа"
+            "floor": "4 этаж",
+            "description": "..",
+            "photo": "static/images/rooms/6-415.png"
+        },
+        {
+            "number": "6-513",
+            "building": "Корпус 6",
+            "floor": "5 этаж",
+            "description": "..",
+            "photo": "static/images/rooms/6-513.png"
         }
     ]
 }

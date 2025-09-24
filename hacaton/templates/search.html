@@ -23,6 +23,11 @@
                 <p><strong>Корпус:</strong> {{ room.building }}</p>
                 <p><strong>Этаж:</strong> {{ room.floor }}</p>
                 <p><strong>Описание:</strong> {{ room.description }}</p>
+                {% if room.photo %}
+                <div class="room-photo">
+                    <img src="{{ room.photo }}" alt="Фото аудитории {{ room.number }}" class="auditorium-image">
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
