@@ -553,3 +553,42 @@ footer {
     object-fit: cover;
     max-height: 300px;
 }
+
+
+/* Кнопка поддержки */
+
+.support-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.support-button a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #0088cc, #006699);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.support-button a:hover {
+    background: linear-gradient(135deg, #006699, #004d73);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+}
+
+.support-button svg {
+    width: 17px;
+    height: 15px;
+    flex-shrink: 0;
+}
