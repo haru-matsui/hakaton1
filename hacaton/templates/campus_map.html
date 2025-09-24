@@ -143,10 +143,9 @@
 <a href="/" class="back-btn">← Назад на главную</a>
 
 <section class="campus-map-section">
-    <h2 style="text-align: center; margin-bottom: 30px; color: #333;">🗺️ Интерактивная карта кампуса</h2>
+    <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Интерактивная карта кампуса</h2>
 
     <div class="campus-map-container">
-        <!-- Панель корпусов -->
         <div class="buildings-panel">
             <div class="panel-title">Корпуса</div>
             <button disabled class="building-btn" onclick="selectBuilding(1)">1 корпус</button>
@@ -160,7 +159,6 @@
             <button disabled class="building-btn" onclick="selectBuilding(9)">9 корпус</button>
         </div>
 
-        <!-- Основная область карты -->
         <div class="map-display" id="mapDisplay">
             <div class="no-map">
                 <h3>Выберите корпус и этаж для просмотра карты</h3>
@@ -168,7 +166,6 @@
             </div>
         </div>
 
-        <!-- Панель этажей -->
         <div class="floors-panel">
             <div class="panel-title">Этажи</div>
             <div id="floorsContainer">
@@ -179,7 +176,6 @@
 </section>
 {% endblock %} {% block scripts %}
 <script>
-    // Данные о корпусах и этажах
     const campusData = {
         1: {
             name: "1 корпус",
@@ -235,16 +231,14 @@
         currentBuilding = buildingNum;
         currentFloor = null;
 
-        // Обновляем активный корпус
+
         document.querySelectorAll('.building-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         event.target.classList.add('active');
 
-        // Генерируем кнопки этажей
         generateFloorButtons(buildingNum);
 
-        // Очищаем карту
         showMap(null, null);
     }
 
@@ -266,13 +260,11 @@
     function selectFloor(floorNum) {
         currentFloor = floorNum;
 
-        // Обновляем активный этаж
         document.querySelectorAll('.floor-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         event.target.classList.add('active');
 
-        // Показываем карту
         showMap(currentBuilding, currentFloor);
     }
 
@@ -289,8 +281,7 @@
             return;
         }
 
-        // Загрзука статических файлов
-        const imagePath = `/static/maps/building_${building}_floor_${floor}.jpg`;
+        const imagePath = `/static/maps/building_${building}_floor_${floor}.png`;
         const buildingInfo = campusData[building];
 
         mapDisplay.innerHTML = `
@@ -307,10 +298,6 @@
         `;
     }
 
-    // Инициализация при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        // Можно автоматически выбрать первый корпус
-        // selectBuilding(1);
-    });
+    document.addEventListener('DOMContentLoaded', function() {});
 </script>
 {% endblock %}

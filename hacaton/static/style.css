@@ -25,7 +25,7 @@ body {
 
 /* Шапка */
 
-header {
+er {
     background-color: white;
     border-bottom: 2px solid #e9ecef;
     padding: 20px 0;
@@ -54,11 +54,11 @@ header .container {
 }
 
 .logo:hover .logo-text h1 {
-    color: #8e44ad;
+    color: #8264ff;
 }
 
 .logo:hover .logo-text p {
-    color: #9b59b6;
+    color: #8264ff;
 }
 
 .logo:hover img {
