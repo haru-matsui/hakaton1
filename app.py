@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os
@@ -10,6 +11,7 @@ from io import BytesIO
 from docx import Document
 from docx.shared import Inches
 import secrets
+import imghdr
 
 from models import db, User, Conspectus, ConspectusVersion, Rating, Comment, Favorite, CoAuthor, Report, Tag, Subject
 from config import Config
@@ -19,6 +21,7 @@ app.config.from_object(Config)
 
 # Initialize extensions
 db.init_app(app)
+csrf = CSRFProtect(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -49,9 +52,33 @@ def teacher_required(f):
 
 def render_markdown(text):
     """Render markdown text to HTML with sanitization"""
+    if not text:
+        return ""
+    
+    # Ensure config values exist
+    allowed_tags = getattr(Config, 'ALLOWED_TAGS', [
+        'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol',
+        'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br'
+    ])
+    allowed_attributes = getattr(Config, 'ALLOWED_ATTRIBUTES', {
+        'a': ['href', 'title'],
+        'abbr': ['title'],
+        'acronym': ['title']
+    })
+    
     html = markdown2.markdown(text, extras=['fenced-code-blocks', 'tables', 'strike', 'task_list'])
-    clean_html = bleach.clean(html, tags=Config.ALLOWED_TAGS, attributes=Config.ALLOWED_ATTRIBUTES)
+    clean_html = bleach.clean(html, tags=allowed_tags, attributes=allowed_attributes)
     return clean_html
+
+
+def validate_image(stream):
+    """Validate that uploaded file is a valid image"""
+    header = stream.read(512)
+    stream.seek(0)
+    format = imghdr.what(None, header)
+    if not format:
+        return None
+    return format if format in ['png', 'jpg', 'jpeg', 'gif', 'webp'] else None
 
 
 # Authentication routes
@@ -243,11 +270,26 @@ def edit_profile(user_id):
         bio = request.form.get('bio', '').strip()
         current_user.bio = bio
         
-        # Handle avatar upload
+        # Handle avatar upload with validation
         if 'avatar' in request.files:
             file = request.files['avatar']
             if file and file.filename:
-                filename = secure_filename(f"user_{current_user.id}_{secrets.token_hex(8)}_{file.filename}")
+                # Validate file is an image
+                if not validate_image(file.stream):
+                    flash('Загруженный файл не является изображением.', 'danger')
+                    return render_template('edit_profile.html')
+                
+                # Check file size (already handled by MAX_CONTENT_LENGTH, but double check)
+                file.seek(0, 2)  # Seek to end
+                size = file.tell()
+                file.seek(0)  # Reset
+                
+                if size > app.config['MAX_CONTENT_LENGTH']:
+                    flash('Файл слишком большой. Максимум 16 МБ.', 'danger')
+                    return render_template('edit_profile.html')
+                
+                # Save file
+                filename = secure_filename(f"user_{current_user.id}_{secrets.token_hex(8)}.{validate_image(file.stream)}")
                 filepath = os.path.join(app.config['AVATARS_FOLDER'], filename)
                 file.save(filepath)
                 current_user.avatar = filename

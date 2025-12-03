@@ -11,6 +11,7 @@
             </div>
             <div class="card-body p-4">
                 <form method="POST" action="{{ url_for('edit_profile', user_id=current_user.id) }}" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="mb-4 text-center">
                         <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) if current_user.avatar != 'default_avatar.png' else 'https://via.placeholder.com/120' }}" 
                              alt="Avatar" class="avatar-large mb-3">

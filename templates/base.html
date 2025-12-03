@@ -338,6 +338,23 @@
     <!-- EasyMDE for Markdown editing -->
     <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
     
+    <script>
+        // CSRF token for AJAX requests
+        const csrfToken = "{{ csrf_token() }}";
+        
+        // Add CSRF token to all fetch requests
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options = {}) {
+            if (options.method && options.method.toUpperCase() !== 'GET') {
+                options.headers = options.headers || {};
+                if (!options.headers['X-CSRFToken']) {
+                    options.headers['X-CSRFToken'] = csrfToken;
+                }
+            }
+            return originalFetch(url, options);
+        };
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

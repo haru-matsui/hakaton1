@@ -11,6 +11,7 @@
             </div>
             <div class="card-body p-4">
                 <form method="POST" action="{{ url_for('create_conspectus') }}" id="conspectusForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="mb-3">
                         <label for="title" class="form-label">Название конспекта *</label>
                         <input type="text" class="form-control form-control-lg" id="title" name="title" 

@@ -29,6 +29,8 @@ class Config:
     # WTF Forms CSRF protection
     WTF_CSRF_ENABLED = True
     WTF_CSRF_TIME_LIMIT = None  # No time limit on CSRF tokens
+    WTF_CSRF_CHECK_DEFAULT = True
+    WTF_CSRF_HEADERS = ['X-CSRFToken', 'X-CSRF-Token']
     
     # Markdown settings
     ALLOWED_TAGS = [
