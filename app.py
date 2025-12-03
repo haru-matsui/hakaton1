@@ -275,21 +275,13 @@ def edit_profile(user_id):
             file = request.files['avatar']
             if file and file.filename:
                 # Validate file is an image
-                if not validate_image(file.stream):
+                img_format = validate_image(file.stream)
+                if not img_format:
                     flash('Загруженный файл не является изображением.', 'danger')
                     return render_template('edit_profile.html')
                 
-                # Check file size (already handled by MAX_CONTENT_LENGTH, but double check)
-                file.seek(0, 2)  # Seek to end
-                size = file.tell()
-                file.seek(0)  # Reset
-                
-                if size > app.config['MAX_CONTENT_LENGTH']:
-                    flash('Файл слишком большой. Максимум 16 МБ.', 'danger')
-                    return render_template('edit_profile.html')
-                
-                # Save file
-                filename = secure_filename(f"user_{current_user.id}_{secrets.token_hex(8)}.{validate_image(file.stream)}")
+                # Save file with validated format
+                filename = secure_filename(f"user_{current_user.id}_{secrets.token_hex(8)}.{img_format}")
                 filepath = os.path.join(app.config['AVATARS_FOLDER'], filename)
                 file.save(filepath)
                 current_user.avatar = filename
