@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Создать конспект - Помощник по конспектам{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-file-earmark-plus"></i> Создать новый конспект</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('create_conspectus') }}" id="conspectusForm">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Название конспекта *</label>
+                        <input type="text" class="form-control form-control-lg" id="title" name="title" 
+                               placeholder="Введите название конспекта" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="subject_id" class="form-label">Предмет</label>
+                            <select class="form-select" id="subject_id" name="subject_id">
+                                <option value="">-- Выберите предмет --</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tags" class="form-label">Теги</label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   placeholder="введите теги через запятую">
+                            <small class="form-text text-muted">Разделяйте теги запятыми</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Содержание *</label>
+                        <textarea id="content" name="content" class="form-control" rows="15" required></textarea>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Используйте Markdown для форматирования текста
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Видимость</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibility" 
+                                   id="visibility_public" value="public" checked>
+                            <label class="form-check-label" for="visibility_public">
+                                <i class="bi bi-globe"></i> Публичный (виден всем)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibility" 
+                                   id="visibility_link" value="link">
+                            <label class="form-check-label" for="visibility_link">
+                                <i class="bi bi-link-45deg"></i> По ссылке (доступен только по ссылке)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibility" 
+                                   id="visibility_private" value="private">
+                            <label class="form-check-label" for="visibility_private">
+                                <i class="bi bi-lock"></i> Приватный (только для вас)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="is_draft" id="is_draft" value="false">
+                    
+                    <div class="d-flex gap-2 justify-content-between">
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary" onclick="saveDraft()">
+                                <i class="bi bi-file-earmark"></i> Сохранить как черновик
+                            </button>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('feed') }}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Опубликовать
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Markdown Guide -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-info-circle"></i> Подсказка по Markdown</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <small>
+                            <strong># Заголовок 1</strong><br>
+                            <strong>## Заголовок 2</strong><br>
+                            <strong>**жирный**</strong><br>
+                            <strong>*курсив*</strong>
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <small>
+                            <strong>[ссылка](url)</strong><br>
+                            <strong>- список</strong><br>
+                            <strong>1. нумерованный список</strong><br>
+                            <strong>`код`</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize EasyMDE Markdown Editor
+    const easyMDE = new EasyMDE({
+        element: document.getElementById('content'),
+        spellChecker: false,
+        placeholder: 'Начните писать свой конспект здесь...',
+        toolbar: [
+            'bold', 'italic', 'heading', '|',
+            'quote', 'code', 'unordered-list', 'ordered-list', '|',
+            'link', 'image', '|',
+            'preview', 'side-by-side', 'fullscreen', '|',
+            'guide'
+        ],
+        status: ['lines', 'words', 'cursor'],
+        minHeight: '400px'
+    });
+    
+    function saveDraft() {
+        document.getElementById('is_draft').value = 'true';
+        document.getElementById('conspectusForm').submit();
+    }
+</script>
+{% endblock %}

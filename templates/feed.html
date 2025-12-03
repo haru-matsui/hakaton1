@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Лента - Помощник по конспектам{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="bi bi-newspaper"></i> Лента конспектов
+        </h2>
+    </div>
+</div>
+
+<!-- Sorting and Filters -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('feed', sort='newest') }}" 
+               class="btn btn-outline-primary {{ 'active' if sort_by == 'newest' else '' }}">
+                <i class="bi bi-clock"></i> Новые
+            </a>
+            <a href="{{ url_for('feed', sort='popular') }}" 
+               class="btn btn-outline-primary {{ 'active' if sort_by == 'popular' else '' }}">
+                <i class="bi bi-fire"></i> Популярные
+            </a>
+            <a href="{{ url_for('feed', sort='most_viewed') }}" 
+               class="btn btn-outline-primary {{ 'active' if sort_by == 'most_viewed' else '' }}">
+                <i class="bi bi-eye"></i> Просматриваемые
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('create_conspectus') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Создать конспект
+        </a>
+    </div>
+</div>
+
+<!-- Conspectuses List -->
+<div class="row">
+    {% if conspectuses %}
+        {% for conspectus in conspectuses %}
+        <div class="col-12 mb-3">
+            <div class="card conspectus-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-2">
+                                <a href="{{ url_for('view_conspectus', conspectus_id=conspectus.id) }}" 
+                                   class="text-decoration-none text-dark">
+                                    {{ conspectus.title }}
+                                </a>
+                            </h5>
+                            
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <img src="{{ url_for('static', filename='uploads/avatars/' + conspectus.author.avatar) if conspectus.author.avatar != 'default_avatar.png' else 'https://via.placeholder.com/30' }}" 
+                                         alt="Avatar" class="avatar" style="width: 24px; height: 24px;">
+                                    <a href="{{ url_for('profile', user_id=conspectus.author.id) }}" 
+                                       class="text-decoration-none">
+                                        {{ conspectus.author.username }}
+                                    </a>
+                                    {% if conspectus.author.role == 'teacher' %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-award"></i> Преподаватель
+                                        </span>
+                                    {% endif %}
+                                    • 
+                                    <i class="bi bi-clock"></i> {{ conspectus.created_at.strftime('%d.%m.%Y') }}
+                                    
+                                    {% if conspectus.subject %}
+                                        • 
+                                        <i class="bi bi-folder"></i> {{ conspectus.subject.name }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            
+                            <p class="card-text text-muted mb-2">
+                                {{ conspectus.content[:200] }}{% if conspectus.content|length > 200 %}...{% endif %}
+                            </p>
+                            
+                            {% if conspectus.tags %}
+                            <div class="mb-2">
+                                {% for tag in conspectus.tags %}
+                                    <span class="tag-badge">
+                                        <i class="bi bi-tag"></i> {{ tag.name }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="d-flex gap-3">
+                                <span class="stats-icon">
+                                    <i class="bi bi-hand-thumbs-up"></i> {{ conspectus.get_likes_count() }}
+                                </span>
+                                <span class="stats-icon">
+                                    <i class="bi bi-chat"></i> {{ conspectus.comments|length }}
+                                </span>
+                                <span class="stats-icon">
+                                    <i class="bi bi-eye"></i> {{ conspectus.views_count }}
+                                </span>
+                                <span class="stats-icon">
+                                    <i class="bi bi-download"></i> {{ conspectus.downloads_count }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- Pagination -->
+        <div class="col-12 mt-4">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('feed', sort=sort_by, page=page-1) }}">
+                            <i class="bi bi-chevron-left"></i> Предыдущая
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% if conspectuses|length == 10 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('feed', sort=sort_by, page=page+1) }}">
+                            Следующая <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                    <h4 class="mt-3">Пока нет конспектов</h4>
+                    <p class="text-muted">Будьте первым! Создайте свой первый конспект.</p>
+                    <a href="{{ url_for('create_conspectus') }}" class="btn btn-primary mt-2">
+                        <i class="bi bi-plus-circle"></i> Создать конспект
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

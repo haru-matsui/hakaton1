@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать - {{ conspectus.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-pencil"></i> Редактировать конспект</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('edit_conspectus', conspectus_id=conspectus.id) }}" id="conspectusForm">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Название конспекта *</label>
+                        <input type="text" class="form-control form-control-lg" id="title" name="title" 
+                               value="{{ conspectus.title }}" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="subject_id" class="form-label">Предмет</label>
+                            <select class="form-select" id="subject_id" name="subject_id">
+                                <option value="">-- Выберите предмет --</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}" {% if conspectus.subject_id == subject.id %}selected{% endif %}>
+                                    {{ subject.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tags" class="form-label">Теги</label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   value="{{ tag_names }}" placeholder="введите теги через запятую">
+                            <small class="form-text text-muted">Разделяйте теги запятыми</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Содержание *</label>
+                        <textarea id="content" name="content" class="form-control" rows="15" required>{{ conspectus.content }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Видимость</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibility" 
+                                   id="visibility_public" value="public" 
+                                   {% if conspectus.visibility == 'public' %}checked{% endif %}>
+                            <label class="form-check-label" for="visibility_public">
+                                <i class="bi bi-globe"></i> Публичный
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibility" 
+                                   id="visibility_link" value="link"
+                                   {% if conspectus.visibility == 'link' %}checked{% endif %}>
+                            <label class="form-check-label" for="visibility_link">
+                                <i class="bi bi-link-45deg"></i> По ссылке
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visibility" 
+                                   id="visibility_private" value="private"
+                                   {% if conspectus.visibility == 'private' %}checked{% endif %}>
+                            <label class="form-check-label" for="visibility_private">
+                                <i class="bi bi-lock"></i> Приватный
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="is_draft" id="is_draft" value="false">
+                    
+                    <div class="d-flex gap-2 justify-content-between">
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary" onclick="saveDraft()">
+                                <i class="bi bi-file-earmark"></i> Сохранить как черновик
+                            </button>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('view_conspectus', conspectus_id=conspectus.id) }}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Сохранить изменения
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const easyMDE = new EasyMDE({
+        element: document.getElementById('content'),
+        spellChecker: false,
+        toolbar: [
+            'bold', 'italic', 'heading', '|',
+            'quote', 'code', 'unordered-list', 'ordered-list', '|',
+            'link', 'image', '|',
+            'preview', 'side-by-side', 'fullscreen', '|',
+            'guide'
+        ],
+        status: ['lines', 'words', 'cursor'],
+        minHeight: '400px'
+    });
+    
+    function saveDraft() {
+        document.getElementById('is_draft').value = 'true';
+        document.getElementById('conspectusForm').submit();
+    }
+</script>
+{% endblock %}

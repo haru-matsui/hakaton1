@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+
+{% block title %}{{ conspectus.title }} - Помощник по конспектам{% endblock %}
+
+{% block content %}
+<!-- Conspectus Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="flex-grow-1">
+                        <h1 class="mb-3">{{ conspectus.title }}</h1>
+                        
+                        <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+                            <div>
+                                <img src="{{ url_for('static', filename='uploads/avatars/' + conspectus.author.avatar) if conspectus.author.avatar != 'default_avatar.png' else 'https://via.placeholder.com/40' }}" 
+                                     alt="Avatar" class="avatar">
+                                <a href="{{ url_for('profile', user_id=conspectus.author.id) }}" 
+                                   class="text-decoration-none fw-bold ms-2">
+                                    {{ conspectus.author.username }}
+                                </a>
+                                {% if conspectus.author.role == 'teacher' %}
+                                    <span class="badge bg-warning text-dark ms-2">
+                                        <i class="bi bi-award"></i> Преподаватель
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="text-muted">
+                                <i class="bi bi-clock"></i> {{ conspectus.created_at.strftime('%d.%m.%Y %H:%M') }}
+                            </div>
+                            
+                            {% if conspectus.subject %}
+                            <div>
+                                <span class="badge bg-primary">
+                                    <i class="bi bi-folder"></i> {{ conspectus.subject.name }}
+                                </span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if conspectus.is_draft %}
+                            <div>
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-file-earmark"></i> Черновик
+                                </span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if conspectus.visibility == 'private' %}
+                            <div>
+                                <span class="badge bg-dark">
+                                    <i class="bi bi-lock"></i> Приватный
+                                </span>
+                            </div>
+                            {% elif conspectus.visibility == 'link' %}
+                            <div>
+                                <span class="badge bg-info">
+                                    <i class="bi bi-link-45deg"></i> По ссылке
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if conspectus.tags %}
+                        <div class="mb-3">
+                            {% for tag in conspectus.tags %}
+                                <span class="tag-badge">
+                                    <i class="bi bi-tag"></i> {{ tag.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex gap-4 mb-3">
+                            <span>
+                                <i class="bi bi-eye stats-icon"></i> {{ conspectus.views_count }} просмотров
+                            </span>
+                            <span>
+                                <i class="bi bi-download stats-icon"></i> {{ conspectus.downloads_count }} скачиваний
+                            </span>
+                            <span>
+                                <i class="bi bi-chat stats-icon"></i> {{ conspectus.comments|length }} комментариев
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="btn-toolbar gap-2" role="toolbar">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-success" onclick="rateConspectus(1)" id="likeBtn">
+                            <i class="bi bi-hand-thumbs-up"></i> <span id="likeCount">{{ conspectus.get_likes_count() }}</span>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" onclick="rateConspectus(-1)" id="dislikeBtn">
+                            <i class="bi bi-hand-thumbs-down"></i> <span id="dislikeCount">{{ conspectus.get_dislikes_count() }}</span>
+                        </button>
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline-warning" onclick="toggleFavorite()" id="favoriteBtn">
+                        <i class="bi bi-star{{ '-fill' if is_favorited else '' }}"></i>
+                        {{ 'В избранном' if is_favorited else 'В избранное' }}
+                    </button>
+                    
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-download"></i> Скачать
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('export_markdown', conspectus_id=conspectus.id) }}">
+                                    <i class="bi bi-file-earmark-text"></i> Markdown (.md)
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('export_docx', conspectus_id=conspectus.id) }}">
+                                    <i class="bi bi-file-earmark-word"></i> Word (.docx)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    {% if current_user.id == conspectus.author_id or (coauthor and coauthor.permission_level in ['edit', 'admin']) %}
+                    <a href="{{ url_for('edit_conspectus', conspectus_id=conspectus.id) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Редактировать
+                    </a>
+                    {% endif %}
+                    
+                    {% if current_user.id == conspectus.author_id %}
+                    <a href="{{ url_for('conspectus_versions', conspectus_id=conspectus.id) }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-clock-history"></i> История
+                    </a>
+                    {% endif %}
+                    
+                    {% if current_user.id == conspectus.author_id or current_user.role == 'teacher' %}
+                    <form method="POST" action="{{ url_for('delete_conspectus', conspectus_id=conspectus.id) }}" 
+                          onsubmit="return confirm('Вы уверены, что хотите удалить этот конспект?');" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-trash"></i> Удалить
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    {% if current_user.id != conspectus.author_id %}
+                    <button type="button" class="btn btn-outline-danger" onclick="reportConspectus()">
+                        <i class="bi bi-flag"></i> Пожаловаться
+                    </button>
+                    {% endif %}
+                </div>
+                
+                {% if conspectus.visibility == 'link' and current_user.id == conspectus.author_id %}
+                <div class="alert alert-info mt-3" role="alert">
+                    <strong><i class="bi bi-link-45deg"></i> Ссылка для доступа:</strong><br>
+                    <code>{{ url_for('view_conspectus', conspectus_id=conspectus.id, token=conspectus.share_link, _external=True) }}</code>
+                    <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyShareLink()">
+                        <i class="bi bi-clipboard"></i> Копировать
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conspectus Content -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body p-4 markdown-content">
+                {{ rendered_content|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Comments Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Комментарии ({{ comments|length }})</h5>
+            </div>
+            <div class="card-body p-4">
+                <!-- Add Comment Form -->
+                <div class="mb-4">
+                    <textarea class="form-control" id="newCommentText" rows="3" 
+                              placeholder="Написать комментарий..."></textarea>
+                    <button class="btn btn-primary mt-2" onclick="addComment()">
+                        <i class="bi bi-send"></i> Отправить
+                    </button>
+                </div>
+                
+                <!-- Comments List -->
+                <div id="commentsList">
+                    {% if comments %}
+                        {% for comment in comments %}
+                        <div class="comment-box" id="comment-{{ comment.id }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <img src="{{ url_for('static', filename='uploads/avatars/' + comment.user.avatar) if comment.user.avatar != 'default_avatar.png' else 'https://via.placeholder.com/30' }}" 
+                                             alt="Avatar" class="avatar" style="width: 32px; height: 32px;">
+                                        <strong class="ms-2">{{ comment.user.username }}</strong>
+                                        {% if comment.is_author_reply %}
+                                            <span class="author-badge ms-2">Автор</span>
+                                        {% endif %}
+                                        <small class="text-muted ms-2">
+                                            <i class="bi bi-clock"></i> {{ comment.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                        </small>
+                                    </div>
+                                    <p class="mb-2">{{ comment.text }}</p>
+                                    <div>
+                                        <button class="btn btn-sm btn-link text-decoration-none" 
+                                                onclick="showReplyForm({{ comment.id }})">
+                                            <i class="bi bi-reply"></i> Ответить
+                                        </button>
+                                        {% if current_user.id == comment.user_id or current_user.role == 'teacher' %}
+                                        <button class="btn btn-sm btn-link text-danger text-decoration-none" 
+                                                onclick="deleteComment({{ comment.id }})">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Reply Form -->
+                                    <div id="replyForm-{{ comment.id }}" style="display: none;" class="mt-2">
+                                        <textarea class="form-control" id="replyText-{{ comment.id }}" rows="2" 
+                                                  placeholder="Написать ответ..."></textarea>
+                                        <button class="btn btn-sm btn-primary mt-2" onclick="addReply({{ comment.id }})">
+                                            <i class="bi bi-send"></i> Ответить
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary mt-2" onclick="hideReplyForm({{ comment.id }})">
+                                            Отмена
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Replies -->
+                            {% if comment.replies %}
+                                {% for reply in comment.replies %}
+                                <div class="reply-box mt-3" id="comment-{{ reply.id }}">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <img src="{{ url_for('static', filename='uploads/avatars/' + reply.user.avatar) if reply.user.avatar != 'default_avatar.png' else 'https://via.placeholder.com/30' }}" 
+                                                     alt="Avatar" class="avatar" style="width: 28px; height: 28px;">
+                                                <strong class="ms-2">{{ reply.user.username }}</strong>
+                                                {% if reply.is_author_reply %}
+                                                    <span class="author-badge ms-2">Автор</span>
+                                                {% endif %}
+                                                <small class="text-muted ms-2">
+                                                    <i class="bi bi-clock"></i> {{ reply.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                                </small>
+                                            </div>
+                                            <p class="mb-2">{{ reply.text }}</p>
+                                            {% if current_user.id == reply.user_id or current_user.role == 'teacher' %}
+                                            <button class="btn btn-sm btn-link text-danger text-decoration-none" 
+                                                    onclick="deleteComment({{ reply.id }})">
+                                                <i class="bi bi-trash"></i> Удалить
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">Комментариев пока нет. Будьте первым!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const conspectusId = {{ conspectus.id }};
+    let userRating = {{ user_rating }};
+    let isFavorited = {{ 'true' if is_favorited else 'false' }};
+    
+    // Update rating button states
+    function updateRatingButtons() {
+        if (userRating === 1) {
+            document.getElementById('likeBtn').classList.add('active');
+            document.getElementById('dislikeBtn').classList.remove('active');
+        } else if (userRating === -1) {
+            document.getElementById('dislikeBtn').classList.add('active');
+            document.getElementById('likeBtn').classList.remove('active');
+        } else {
+            document.getElementById('likeBtn').classList.remove('active');
+            document.getElementById('dislikeBtn').classList.remove('active');
+        }
+    }
+    
+    updateRatingButtons();
+    
+    function rateConspectus(vote) {
+        fetch(`/api/conspectus/${conspectusId}/rate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ vote: vote })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('likeCount').textContent = data.likes;
+                document.getElementById('dislikeCount').textContent = data.dislikes;
+                
+                if (data.action === 'removed') {
+                    userRating = 0;
+                } else {
+                    userRating = vote;
+                }
+                updateRatingButtons();
+            }
+        });
+    }
+    
+    function toggleFavorite() {
+        fetch(`/api/conspectus/${conspectusId}/favorite`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const btn = document.getElementById('favoriteBtn');
+                if (data.action === 'added') {
+                    btn.innerHTML = '<i class="bi bi-star-fill"></i> В избранном';
+                    isFavorited = true;
+                } else {
+                    btn.innerHTML = '<i class="bi bi-star"></i> В избранное';
+                    isFavorited = false;
+                }
+            }
+        });
+    }
+    
+    function addComment() {
+        const text = document.getElementById('newCommentText').value.trim();
+        if (!text) return;
+        
+        fetch(`/api/conspectus/${conspectusId}/comment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+    
+    function addReply(parentId) {
+        const text = document.getElementById(`replyText-${parentId}`).value.trim();
+        if (!text) return;
+        
+        fetch(`/api/conspectus/${conspectusId}/comment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text, parent_id: parentId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+    
+    function deleteComment(commentId) {
+        if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) return;
+        
+        fetch(`/api/comment/${commentId}/delete`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`comment-${commentId}`).remove();
+            }
+        });
+    }
+    
+    function showReplyForm(commentId) {
+        document.getElementById(`replyForm-${commentId}`).style.display = 'block';
+    }
+    
+    function hideReplyForm(commentId) {
+        document.getElementById(`replyForm-${commentId}`).style.display = 'none';
+    }
+    
+    function reportConspectus() {
+        const reason = prompt('Укажите причину жалобы:');
+        if (!reason) return;
+        
+        fetch(`/api/conspectus/${conspectusId}/report`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reason: reason })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Жалоба отправлена. Спасибо!');
+            } else {
+                alert(data.error || 'Ошибка при отправке жалобы');
+            }
+        });
+    }
+    
+    function copyShareLink() {
+        const link = '{{ url_for("view_conspectus", conspectus_id=conspectus.id, token=conspectus.share_link, _external=True) }}';
+        navigator.clipboard.writeText(link).then(() => {
+            alert('Ссылка скопирована в буфер обмена!');
+        });
+    }
+</script>
+{% endblock %}

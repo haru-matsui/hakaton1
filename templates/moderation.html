@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Модерация - Помощник по конспектам{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="bi bi-shield-check"></i> Панель модерации
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-flag"></i> Жалобы ({{ reports|length }})
+                </h5>
+            </div>
+            <div class="card-body p-3">
+                {% if reports %}
+                    {% for report in reports %}
+                    <div class="card mb-3" id="report-{{ report.id }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title">
+                                        <a href="{{ url_for('view_conspectus', conspectus_id=report.conspectus.id) }}" 
+                                           class="text-decoration-none" target="_blank">
+                                            {{ report.conspectus.title }}
+                                        </a>
+                                    </h6>
+                                    
+                                    <p class="card-text">
+                                        <strong>Жалоба от:</strong> 
+                                        <a href="{{ url_for('profile', user_id=report.reporter.id) }}" 
+                                           class="text-decoration-none">
+                                            {{ report.reporter.username }}
+                                        </a><br>
+                                        <strong>Причина:</strong> {{ report.reason }}<br>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock"></i> {{ report.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                        </small>
+                                    </p>
+                                    
+                                    <p class="card-text text-muted small">
+                                        <strong>Автор конспекта:</strong>
+                                        <a href="{{ url_for('profile', user_id=report.conspectus.author.id) }}" 
+                                           class="text-decoration-none">
+                                            {{ report.conspectus.author.username }}
+                                        </a>
+                                    </p>
+                                </div>
+                                
+                                <div class="btn-group-vertical" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                            onclick="resolveReport({{ report.id }}, 'resolve')">
+                                        <i class="bi bi-check-circle"></i> Отклонить жалобу
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="resolveReport({{ report.id }}, 'delete')">
+                                        <i class="bi bi-trash"></i> Удалить конспект
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-check-circle" style="font-size: 4rem; color: #27ae60;"></i>
+                        <h4 class="mt-3">Нет активных жалоб</h4>
+                        <p class="text-muted">Все жалобы рассмотрены</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function resolveReport(reportId, action) {
+        let confirmMsg = action === 'delete' 
+            ? 'Вы уверены, что хотите удалить этот конспект?' 
+            : 'Вы уверены, что хотите отклонить эту жалобу?';
+        
+        if (!confirm(confirmMsg)) return;
+        
+        fetch(`/api/report/${reportId}/resolve`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`report-${reportId}`).remove();
+                
+                // Check if no more reports
+                const reportsContainer = document.querySelector('.card-body');
+                if (!reportsContainer.querySelector('.card')) {
+                    location.reload();
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}
